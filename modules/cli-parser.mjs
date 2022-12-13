@@ -1,5 +1,6 @@
 import { appEnv } from './app-enviroment.mjs';
-import { APP } from './constants.mjs';
+import { APP, COLOR } from './constants.mjs';
+import * as nav from './navigation.mjs';
 
 export const parseCommand = () => {
   process.stdin.on('data', chooseAction);
@@ -8,19 +9,25 @@ export const parseCommand = () => {
 
 const chooseAction = (chunk) => {
   const string = chunk.toString().trim();
+  const commands = string.split(' ');
 
   if (string === `${APP.exit}`) {
     showFinalPhrase();
   }
 
+  switch (commands[0]) {
+    case 'up':
+      nav.goToUpperDirectory();
+  }
+
   process.stdout.write(
-    `You are currently in \x1b[33m${appEnv.currentPath}!\x1b[0m\n`
+    `You are currently in ${COLOR.yellow}${appEnv.currentPath}${COLOR.default}!\n`
   );
 };
 
 const showFinalPhrase = () => {
   process.stdout.write(
-    `Thank you for using File Manager, \x1b[33m${appEnv.user}\x1b[0m, goodbye!\n`
+    `Thank you for using File Manager, ${COLOR.yellow}${appEnv.user}${COLOR.default}, goodbye!\n`
   );
   process.exit();
 };

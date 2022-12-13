@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { appEnv } from './app-enviroment.mjs';
 import { parseCommand } from './cli-parser.mjs';
-import { ARGS } from './constants.mjs';
+import { ARGS, COLOR } from './constants.mjs';
 import { setUserDefaultPath } from './path-parser.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -21,10 +21,10 @@ export const appInit = () => {
   setUserDefaultPath();
 
   process.stdout.write(
-    `Welcome to the File Manager, \x1b[33m${appEnv.user}!\x1b[0m\n`
+    `Welcome to the File Manager, ${COLOR.yellow}${appEnv.user}!${COLOR.default}\n`
   );
   process.stdout.write(
-    `You are currently in \x1b[33m${appEnv.currentPath}!\x1b[0m\n`
+    `You are currently in ${COLOR.yellow}${appEnv.currentPath}!${COLOR.default}\n`
   );
 
   parseCommand();
