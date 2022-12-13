@@ -9,15 +9,24 @@ export const parseCommand = () => {
 
 const chooseAction = (chunk) => {
   const string = chunk.toString().trim();
-  const commands = string.split(' ');
+  const arrFromString = string.split(' ');
+  const command = arrFromString[0];
+  const commandArguments = arrFromString.slice(1);
 
   if (string === `${APP.exit}`) {
     showFinalPhrase();
   }
 
-  switch (commands[0]) {
+  switch (command) {
     case 'up':
-      nav.goToUpperDirectory();
+      nav.goToUpperDirectory(commandArguments);
+      break;
+    case 'cd':
+      nav.goToDedicatedDirectory(commandArguments);
+      break;
+    case 'ls':
+      nav.showFolderContent(commandArguments);
+      break;
   }
 
   process.stdout.write(
