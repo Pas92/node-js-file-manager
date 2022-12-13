@@ -1,6 +1,7 @@
 import { appEnv } from './app-enviroment.mjs';
 import { APP, COLOR } from './constants.mjs';
 import * as nav from './navigation.mjs';
+import * as fileActions from './file-actions.mjs';
 
 export const parseCommand = () => {
   process.stdin.on('data', chooseAction);
@@ -26,6 +27,24 @@ const chooseAction = (chunk) => {
       break;
     case 'ls':
       nav.showFolderContent(commandArguments);
+      break;
+    case 'cat':
+      fileActions.printFile(commandArguments);
+      break;
+    case 'add':
+      fileActions.createEmptyFile(commandArguments);
+      break;
+    case 'rn':
+      fileActions.renameFile(commandArguments);
+      break;
+    case 'cp':
+      fileActions.copyFile(commandArguments);
+      break;
+    case 'mv':
+      fileActions.moveFile(commandArguments);
+      break;
+    case 'rm':
+      fileActions.deleteFile(commandArguments);
       break;
   }
 
