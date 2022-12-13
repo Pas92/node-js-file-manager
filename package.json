@@ -2,7 +2,6 @@
   "name": "node-js-file-manager",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "type": "module",
   "scripts": {
     "start": "node index.js"
@@ -11,6 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/Pas92/node-js-file-manager.git"
   },
+  "keywords": ["nodejs"],
   "author": "Pas92",
   "license": "MIT",
   "bugs": {
