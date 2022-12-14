@@ -2,6 +2,7 @@ import { appEnv } from './app-enviroment.mjs';
 import { APP, COLOR } from './constants.mjs';
 import * as nav from './navigation.mjs';
 import * as fileActions from './file-actions.mjs';
+import * as osInfo from './os-info.mjs';
 
 export const parseCommand = () => {
   process.stdin.on('data', chooseAction);
@@ -46,6 +47,11 @@ const chooseAction = (chunk) => {
     case 'rm':
       fileActions.deleteFile(commandArguments);
       break;
+    case 'os':
+      osInfo.getOsInfo(commandArguments);
+      break;
+    default:
+      console.log(`${COLOR.red}Invalid input${COLOR.default}`);
   }
 
   process.stdout.write(
