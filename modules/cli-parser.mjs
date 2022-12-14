@@ -3,6 +3,8 @@ import { APP, COLOR } from './constants.mjs';
 import * as nav from './navigation.mjs';
 import * as fileActions from './file-actions.mjs';
 import * as osInfo from './os-info.mjs';
+import * as hashCalculator from './hash-calc.mjs';
+import * as zipActions from './zip.mjs';
 
 export const parseCommand = () => {
   process.stdin.on('data', chooseAction);
@@ -49,6 +51,15 @@ const chooseAction = (chunk) => {
       break;
     case 'os':
       osInfo.getOsInfo(commandArguments);
+      break;
+    case 'hash':
+      hashCalculator.calculateHash(commandArguments);
+      break;
+    case 'compress':
+      zipActions.compress(commandArguments);
+      break;
+    case 'decompress':
+      zipActions.decompress(commandArguments);
       break;
     default:
       console.log(`${COLOR.red}Invalid input${COLOR.default}`);
