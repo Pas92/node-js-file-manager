@@ -16,7 +16,7 @@ const setUserName = () => {
   appEnv.user = argument.split('=')[1];
 };
 
-export const appInit = () => {
+export const appInit = async () => {
   setUserName();
   setUserDefaultPath();
 
@@ -27,5 +27,5 @@ export const appInit = () => {
     `You are currently in ${COLOR.yellow}${appEnv.currentPath}!${COLOR.default}\n`
   );
 
-  parseCommand();
+  await parseCommand();
 };

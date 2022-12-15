@@ -6,12 +6,12 @@ import * as osInfo from './os-info.mjs';
 import * as hashCalculator from './hash-calc.mjs';
 import * as zipActions from './zip.mjs';
 
-export const parseCommand = () => {
-  process.stdin.on('data', chooseAction);
+export const parseCommand = async () => {
+  process.stdin.on('data', await chooseAction);
   process.on('SIGINT', showFinalPhrase);
 };
 
-const chooseAction = (chunk) => {
+const chooseAction = async (chunk) => {
   const string = chunk.toString().trim();
   const arrFromString = string.split(' ');
   const command = arrFromString[0];
@@ -26,7 +26,7 @@ const chooseAction = (chunk) => {
       nav.goToUpperDirectory(commandArguments);
       break;
     case 'cd':
-      nav.goToDedicatedDirectory(commandArguments);
+      await nav.goToDedicatedDirectory(commandArguments);
       break;
     case 'ls':
       nav.showFolderContent(commandArguments);
