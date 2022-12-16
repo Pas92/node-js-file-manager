@@ -32,22 +32,22 @@ const chooseAction = async (chunk) => {
       nav.showFolderContent(commandArguments);
       break;
     case 'cat':
-      fileActions.printFile(commandArguments);
+      await fileActions.printFile(commandArguments);
       break;
     case 'add':
-      fileActions.createEmptyFile(commandArguments);
+      await fileActions.createEmptyFile(commandArguments);
       break;
     case 'rn':
-      fileActions.renameFile(commandArguments);
+      await fileActions.renameFile(commandArguments);
       break;
     case 'cp':
-      fileActions.copyFile(commandArguments);
+      await fileActions.copyFile(commandArguments);
       break;
     case 'mv':
-      fileActions.moveFile(commandArguments);
+      await fileActions.moveFile(commandArguments);
       break;
     case 'rm':
-      fileActions.deleteFile(commandArguments);
+      await fileActions.deleteFile(commandArguments);
       break;
     case 'os':
       osInfo.getOsInfo(commandArguments);
@@ -65,13 +65,13 @@ const chooseAction = async (chunk) => {
       console.log(`${COLOR.red}Invalid input${COLOR.default}`);
   }
 
-  process.stdout.write(
-    `You are currently in ${COLOR.yellow}${appEnv.currentPath}${COLOR.default}!\n`
+  console.log(
+    `You are currently in ${COLOR.yellow}${appEnv.currentPath}${COLOR.default}!`
   );
 };
 
 const showFinalPhrase = () => {
-  process.stdout.write(
+  console.log(
     `Thank you for using File Manager, ${COLOR.yellow}${appEnv.user}${COLOR.default}, goodbye!\n`
   );
   process.exit();

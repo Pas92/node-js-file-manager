@@ -1,55 +1,197 @@
 import { COLOR } from './constants.mjs';
+import { appEnv } from './app-enviroment.mjs';
+import * as errHandler from './app-errors-handler.mjs';
+import { isExistingPath } from './path-parser.mjs';
+import { createReadStream } from 'node:fs';
+import { Transform } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
+import * as path from 'node:path';
+import * as fs from 'node:fs/promises';
 
-export const printFile = (args) => {
-  //TODO: Read file and print it's content in console (should be done using Readable stream)
-  process.stdout.write(
-    `Command is ${COLOR.yellow}file-actions:${COLOR.green}cat${COLOR.default}\n`
-  );
+class ColorifyTransform extends Transform {
+  _transform(chunk, enc, cb) {
+    try {
+      cb(null, `${COLOR.cyan}${chunk.toString()}${COLOR.default}`);
+    } catch (error) {
+      console.log(`${COLOR.red}Operation failed!${COLOR.default}`);
+    }
+  }
+}
 
-  console.log(`Arguments: `, args);
+export const printFile = async (args) => {
+  // Read file and print it's content in console (should be done using Readable stream)
+
+  let rs;
+  if (errHandler.hasOneArgument(args)) {
+    try {
+      const pathToFile = path.join(appEnv.currentPath, args[0]);
+      if (await isExistingPath(pathToFile)) {
+        rs = createReadStream(pathToFile);
+      } else {
+        throw new Error('File is not exist!');
+      }
+    } catch (error) {
+      console.log(
+        `${COLOR.red}Invalid input! File is not exist!${COLOR.default}`
+      );
+      return;
+    }
+
+    try {
+      const ts = new ColorifyTransform();
+      ts.on('data', (chunk) => {
+        process.stdout.write(chunk.toString());
+      });
+      await pipeline(rs, ts);
+      return;
+    } catch (error) {
+      console.log(`${COLOR.red}Operation failed!${COLOR.default}`);
+      return;
+    }
+  }
 };
 
-export const createEmptyFile = (args) => {
-  //TODO: Create empty file in current working directory
-  process.stdout.write(
-    `Command is ${COLOR.yellow}file-actions:${COLOR.green}add${COLOR.default}\n`
-  );
+export const createEmptyFile = async (args) => {
+  // Create empty file in current working directory
 
-  console.log(`Arguments: `, args);
+  if (errHandler.hasOneArgument(args)) {
+    try {
+      const pathToFile = path.join(appEnv.currentPath, args[0]);
+      await (await fs.open(pathToFile, 'wx')).close();
+      console.log(
+        `The file ${COLOR.blue}${args[0]}${COLOR.default} has been created in the folder ${COLOR.yellow}${appEnv.currentPath}${COLOR.default}`
+      );
+    } catch (error) {
+      console.log(
+        `${COLOR.red}Operation failed! The file is already exists!${COLOR.default}`
+      );
+    }
+  }
 };
 
-export const renameFile = (args) => {
-  //TODO: Rename file (content should remain unchanged)
-  process.stdout.write(
-    `Command is ${COLOR.yellow}file-actions:${COLOR.green}rn${COLOR.default}\n`
-  );
+export const renameFile = async (args) => {
+  // Rename file (content should remain unchanged)
 
-  console.log(`Arguments: `, args);
+  if (errHandler.hasTwoArgument(args)) {
+    if (await isExistingPath(args[0])) {
+      try {
+        const pathToFile = path.isAbsolute(args[0])
+          ? args[0]
+          : path.resolve(appEnv.currentPath, args[0]);
+
+        if (!(await fs.stat(pathToFile)).isFile()) {
+          throw new Error(errHandler.FILE_NOT_FOUND);
+        }
+
+        const workingDir = path.parse(pathToFile).dir;
+        const newPathToFile = path.join(workingDir, args[1]);
+        await (await fs.open(newPathToFile, 'wx')).close();
+        await fs.unlink(newPathToFile);
+        await fs.rename(path.join(pathToFile), newPathToFile);
+
+        console.log(`The file has been renamed!`);
+      } catch (error) {
+        if (error.message === errHandler.FILE_NOT_FOUND) {
+          console.log(errHandler.FILE_NOT_FOUND);
+        } else {
+          console.log(`${COLOR.red}Operation failed!${COLOR.default}`);
+        }
+      }
+      return;
+    }
+
+    console.log(errHandler.FILE_NOT_FOUND);
+  }
 };
 
-export const copyFile = (args) => {
-  //TODO: Copy file (should be done using Readable and Writable streams)
-  process.stdout.write(
-    `Command is ${COLOR.yellow}file-actions:${COLOR.green}cp${COLOR.default}\n`
-  );
+export const copyFile = async (args, isShowMessage = true) => {
+  // Copy file (should be done using Readable and Writable streams)
 
-  console.log(`Arguments: `, args);
+  if (errHandler.hasTwoArgument(args)) {
+    if (await isExistingPath(args[0])) {
+      try {
+        const pathToFile = path.isAbsolute(args[0])
+          ? args[0]
+          : path.resolve(appEnv.currentPath, args[0]);
+
+        const newPath = path.isAbsolute(args[0])
+          ? args[0]
+          : path.resolve(appEnv.currentPath, args[1]);
+
+        if (!(await fs.stat(pathToFile)).isFile()) {
+          throw new Error(errHandler.FILE_NOT_FOUND);
+        }
+
+        if (!(await isExistingPath(newPath))) {
+          await fs.mkdir(newPath);
+        }
+
+        const filename = path.parse(pathToFile).base;
+        //TODO: add streams
+        await fs.copyFile(
+          pathToFile,
+          path.join(newPath, filename),
+          fs.constants.COPYFILE_EXCL
+        );
+
+        if (isShowMessage) {
+          console.log(`The file has been copied!`);
+        }
+
+        return pathToFile;
+      } catch (error) {
+        if (error.message === errHandler.FILE_NOT_FOUND) {
+          console.log(errHandler.FILE_NOT_FOUND);
+        } else {
+          console.log(`${COLOR.red}Operation failed!${COLOR.default}`);
+        }
+      }
+      return;
+    }
+
+    console.log(errHandler.FILE_NOT_FOUND);
+  }
 };
 
-export const moveFile = (args) => {
-  //TODO: Move file (same as copy but initial file is deleted, copying part should be done using Readable and Writable streams)
+export const moveFile = async (args) => {
+  // Move file (same as copy but initial file is deleted, copying part should be done using Readable and Writable streams)
   process.stdout.write(
     `Command is ${COLOR.yellow}file-actions:${COLOR.green}mv${COLOR.default}\n`
   );
 
   console.log(`Arguments: `, args);
+
+  const pathForDeleting = await copyFile(args, false);
+  if (pathForDeleting) {
+    try {
+      await fs.unlink(pathForDeleting);
+    } catch (error) {
+      console.log(`${COLOR.red}Operation failed!${COLOR.default}`);
+    }
+  }
 };
 
-export const deleteFile = (args) => {
-  //TODO: Delete file
-  process.stdout.write(
-    `Command is ${COLOR.yellow}file-actions:${COLOR.green}rm${COLOR.default}\n`
-  );
+export const deleteFile = async (args) => {
+  // Delete file
 
-  console.log(`Arguments: `, args);
+  if (errHandler.hasOneArgument(args)) {
+    if (await isExistingPath(args[0])) {
+      try {
+        const pathToFile = path.isAbsolute(args[0])
+          ? args[0]
+          : path.join(appEnv.currentPath, args[0]);
+        await fs.unlink(pathToFile);
+        console.log(
+          `The file ${COLOR.blue}${args[0]}${COLOR.default} has been deleted!`
+        );
+      } catch (error) {
+        console.log(`${COLOR.red}Operation failed!${COLOR.default}`);
+      }
+      return;
+    }
+
+    console.log(
+      `${COLOR.red}Operation failed! The file is not found!${COLOR.default}`
+    );
+  }
 };

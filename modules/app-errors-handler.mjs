@@ -21,3 +21,16 @@ export const hasOneArgument = (args) => {
 
   return true;
 };
+
+export const hasTwoArgument = (args) => {
+  if (args.length !== 2) {
+    console.log(
+      `${COLOR.red}Invalid input! This command should have two argument${COLOR.default}`
+    );
+    return false;
+  }
+
+  return true;
+};
+
+export const FILE_NOT_FOUND = `${COLOR.red}Operation failed! The file is not found!${COLOR.default}`;
