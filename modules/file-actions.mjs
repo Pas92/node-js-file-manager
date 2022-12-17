@@ -2,7 +2,7 @@ import { COLOR } from './constants.mjs';
 import { appEnv } from './app-enviroment.mjs';
 import * as errHandler from './app-errors-handler.mjs';
 import { isExistingPath } from './path-parser.mjs';
-import { createReadStream } from 'node:fs';
+import { createReadStream, createWriteStream } from 'node:fs';
 import { Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import * as path from 'node:path';
@@ -125,14 +125,18 @@ export const copyFile = async (args, isShowMessage = true) => {
         if (!(await isExistingPath(newPath))) {
           await fs.mkdir(newPath);
         }
-
         const filename = path.parse(pathToFile).base;
-        //TODO: add streams
-        await fs.copyFile(
-          pathToFile,
-          path.join(newPath, filename),
-          fs.constants.COPYFILE_EXCL
-        );
+        const pathToNewFile = path.join(newPath, filename);
+
+        await (await fs.open(pathToNewFile, 'wx')).close();
+        await fs.unlink(pathToNewFile);
+
+        const rs = createReadStream(pathToFile);
+        const ws = createWriteStream(pathToNewFile);
+        const ac = new AbortController();
+        const signal = ac.signal;
+
+        await pipeline(rs, ws, { signal });
 
         if (isShowMessage) {
           console.log(`The file has been copied!`);
