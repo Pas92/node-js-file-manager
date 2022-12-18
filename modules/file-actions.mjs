@@ -7,6 +7,7 @@ import { Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
+import { CustomStdout } from './utils.mjs';
 
 class ColorifyTransform extends Transform {
   _transform(chunk, enc, cb) {
@@ -39,10 +40,9 @@ export const printFile = async (args) => {
 
     try {
       const ts = new ColorifyTransform();
-      ts.on('data', (chunk) => {
-        process.stdout.write(chunk.toString());
-      });
-      await pipeline(rs, ts);
+      const ws = new CustomStdout();
+      await pipeline(rs, ts, ws);
+      process.stdout.write('\n');
       return;
     } catch (error) {
       console.log(`${COLOR.red}Operation failed!${COLOR.default}`);
