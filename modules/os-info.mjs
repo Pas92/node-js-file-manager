@@ -1,4 +1,6 @@
 import { COLOR } from './constants.mjs';
+import { INVALID_INPUT } from './app-errors-handler.mjs';
+
 import * as os from 'node:os';
 
 export const getOsInfo = (args) => {
@@ -37,6 +39,6 @@ const showInfo = (arg) => {
       console.log(`${COLOR.yellow}${os.arch()}${COLOR.default}`);
       break;
     default:
-      console.log(`${COLOR.red}Invalid input${COLOR.default}`);
+      console.log(INVALID_INPUT);
   }
 };

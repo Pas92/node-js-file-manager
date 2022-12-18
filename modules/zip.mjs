@@ -1,14 +1,15 @@
-import { COLOR } from './constants.mjs';
 import { appEnv } from './app-enviroment.mjs';
-import { createReadStream, createWriteStream } from 'node:fs';
-import { pipeline } from 'node:stream/promises';
-import * as path from 'node:path';
-import * as fs from 'node:fs/promises';
 import {
   FILE_IS_ALREADY_EXIST,
   hasTwoArgument,
+  INVALID_INPUT_PATH,
+  OPERATION_FAILED,
 } from './app-errors-handler.mjs';
 import { isExistingPath } from './path-parser.mjs';
+
+import * as path from 'node:path';
+import { createReadStream, createWriteStream } from 'node:fs';
+import { pipeline } from 'node:stream/promises';
 import { createBrotliCompress, createBrotliDecompress } from 'node:zlib';
 
 export const compress = async (args) => {
@@ -39,15 +40,13 @@ export const compress = async (args) => {
         if (error.code === 'EEXIST') {
           console.log(FILE_IS_ALREADY_EXIST);
         } else {
-          console.log(`${COLOR.red}Operation failed!${COLOR.default}`);
+          console.log(OPERATION_FAILED);
         }
         return;
       }
     }
 
-    console.log(
-      `${COLOR.red}Invalid input! Path is not exist!${COLOR.default}`
-    );
+    console.log(INVALID_INPUT_PATH);
   }
 };
 
@@ -80,14 +79,12 @@ export const decompress = async (args) => {
         if (error.code === 'EEXIST') {
           console.log(FILE_IS_ALREADY_EXIST);
         } else {
-          console.log(`${COLOR.red}Operation failed!${COLOR.default}`);
+          console.log(OPERATION_FAILED);
         }
         return;
       }
     }
 
-    console.log(
-      `${COLOR.red}Invalid input! Path is not exist!${COLOR.default}`
-    );
+    console.log(INVALID_INPUT_PATH);
   }
 };

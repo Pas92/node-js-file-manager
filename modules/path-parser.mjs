@@ -1,13 +1,8 @@
 import { appEnv } from './app-enviroment.mjs';
-import * as fs from 'node:fs/promises';
 import { homedir } from 'node:os';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-import { COLOR } from './constants.mjs';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
+import { INVALID_INPUT_PATH } from './app-errors-handler.mjs';
 
 export const setUserDefaultPath = () => {
   appEnv.currentPath = homedir();
@@ -28,7 +23,7 @@ export const getAbsolutePath = async (incomingPath) => {
     }
     throw new Error();
   } catch (error) {
-    console.log(`${COLOR.red}Invalid input! Path isn't exist${COLOR.default}`);
+    console.log(INVALID_INPUT_PATH);
   }
 };
 

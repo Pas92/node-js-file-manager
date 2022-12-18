@@ -2,15 +2,16 @@ import { COLOR } from './constants.mjs';
 import { appEnv } from './app-enviroment.mjs';
 import * as errHandler from './app-errors-handler.mjs';
 import { isExistingPath } from './path-parser.mjs';
+import { CustomStdout } from './utils.mjs';
+
 import { createReadStream, createWriteStream } from 'node:fs';
 import { Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
-import { CustomStdout } from './utils.mjs';
 
 class ColorifyTransform extends Transform {
-  _transform(chunk, enc, cb) {
+  _transform(chunk, _enc, cb) {
     try {
       cb(null, `${COLOR.cyan}${chunk.toString()}${COLOR.default}`);
     } catch (error) {
@@ -33,7 +34,7 @@ export const printFile = async (args) => {
       }
     } catch (error) {
       console.log(
-        `${COLOR.red}Invalid input! File is not exist!${COLOR.default}`
+        `${errHandler.INVALID_INPUT} ${errHandler.FILE_IS_NOT_EXIST}`
       );
       return;
     }
@@ -45,7 +46,7 @@ export const printFile = async (args) => {
       process.stdout.write('\n');
       return;
     } catch (error) {
-      console.log(`${COLOR.red}Operation failed!${COLOR.default}`);
+      console.log(errHandler.OPERATION_FAILED);
       return;
     }
   }
@@ -62,9 +63,7 @@ export const createEmptyFile = async (args) => {
         `The file ${COLOR.blue}${args[0]}${COLOR.default} has been created in the folder ${COLOR.yellow}${appEnv.currentPath}${COLOR.default}`
       );
     } catch (error) {
-      console.log(
-        `${COLOR.red}Operation failed! The file is already exists!${COLOR.default}`
-      );
+      console.log(errHandler.FILE_IS_ALREADY_EXIST);
     }
   }
 };
@@ -94,7 +93,7 @@ export const renameFile = async (args) => {
         if (error.message === errHandler.FILE_NOT_FOUND) {
           console.log(errHandler.FILE_NOT_FOUND);
         } else {
-          console.log(`${COLOR.red}Operation failed!${COLOR.default}`);
+          console.log(errHandler.OPERATION_FAILED);
         }
       }
       return;
@@ -147,7 +146,7 @@ export const copyFile = async (args, isShowMessage = true) => {
         if (error.message === errHandler.FILE_NOT_FOUND) {
           console.log(errHandler.FILE_NOT_FOUND);
         } else {
-          console.log(`${COLOR.red}Operation failed!${COLOR.default}`);
+          console.log(errHandler.OPERATION_FAILED);
         }
       }
       return;
@@ -159,18 +158,12 @@ export const copyFile = async (args, isShowMessage = true) => {
 
 export const moveFile = async (args) => {
   // Move file (same as copy but initial file is deleted, copying part should be done using Readable and Writable streams)
-  process.stdout.write(
-    `Command is ${COLOR.yellow}file-actions:${COLOR.green}mv${COLOR.default}\n`
-  );
-
-  console.log(`Arguments: `, args);
-
   const pathForDeleting = await copyFile(args, false);
   if (pathForDeleting) {
     try {
       await fs.unlink(pathForDeleting);
     } catch (error) {
-      console.log(`${COLOR.red}Operation failed!${COLOR.default}`);
+      console.log(errHandler.OPERATION_FAILED);
     }
   }
 };
@@ -189,13 +182,11 @@ export const deleteFile = async (args) => {
           `The file ${COLOR.blue}${args[0]}${COLOR.default} has been deleted!`
         );
       } catch (error) {
-        console.log(`${COLOR.red}Operation failed!${COLOR.default}`);
+        console.log(errHandler.OPERATION_FAILED);
       }
       return;
     }
 
-    console.log(
-      `${COLOR.red}Operation failed! The file is not found!${COLOR.default}`
-    );
+    console.log(errHandler.FILE_NOT_FOUND);
   }
 };

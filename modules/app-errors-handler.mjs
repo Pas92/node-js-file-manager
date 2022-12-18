@@ -33,5 +33,9 @@ export const hasTwoArgument = (args) => {
   return true;
 };
 
+export const INVALID_INPUT = `${COLOR.red}Invalid input!${COLOR.default}`;
+export const INVALID_INPUT_PATH = `${COLOR.red}Invalid input! Path is not exist${COLOR.default}`;
+export const OPERATION_FAILED = `${COLOR.red}Operation failed!${COLOR.default}`;
+export const FILE_IS_NOT_EXIST = `${COLOR.red}File is not exist!${COLOR.default}`;
 export const FILE_NOT_FOUND = `${COLOR.red}Operation failed! The file is not found!${COLOR.default}`;
 export const FILE_IS_ALREADY_EXIST = `${COLOR.red}Operation failed! The file is already exist!${COLOR.default}`;

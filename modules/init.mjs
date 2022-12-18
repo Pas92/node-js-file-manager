@@ -1,4 +1,5 @@
 import { appEnv } from './app-enviroment.mjs';
+import { INVALID_INPUT } from './app-errors-handler.mjs';
 import { parseCommand } from './cli-parser.mjs';
 import { ARGS, COLOR } from './constants.mjs';
 import { setUserDefaultPath } from './path-parser.mjs';
@@ -10,7 +11,7 @@ const setUserName = () => {
 
   if (!argument) {
     console.log(
-      `${COLOR.red}Invalid input! Enter the username with argument ${COLOR.magenta}${ARGS.user}=<username>${COLOR.default}`
+      `${INVALID_INPUT} ${COLOR.red}Enter the username with argument ${COLOR.magenta}${ARGS.user}=<username>${COLOR.default}`
     );
     process.exit();
   } else {

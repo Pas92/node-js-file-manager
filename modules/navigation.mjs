@@ -1,9 +1,9 @@
-import * as path from 'node:path';
-import * as fs from 'node:fs/promises';
-
 import { appEnv } from './app-enviroment.mjs';
 import * as errHandler from './app-errors-handler.mjs';
 import { getAbsolutePath } from './path-parser.mjs';
+
+import * as path from 'node:path';
+import * as fs from 'node:fs/promises';
 
 export const goToUpperDirectory = (args) => {
   // Go upper from current directory (when you are in the root folder this operation shouldn't change working directory)
