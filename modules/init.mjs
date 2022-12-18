@@ -16,6 +16,13 @@ const setUserName = () => {
     process.exit();
   } else {
     appEnv.user = argument.split('=')[1];
+
+    if (!appEnv.user) {
+      console.log(
+        `${INVALID_INPUT} ${COLOR.red}Enter the username with argument ${COLOR.magenta}${ARGS.user}=<username>${COLOR.default}`
+      );
+      process.exit();
+    }
   }
 };
 
