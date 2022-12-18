@@ -56,10 +56,10 @@ const chooseAction = async (chunk) => {
       await hashCalculator.calculateHash(commandArguments);
       break;
     case 'compress':
-      zipActions.compress(commandArguments);
+      await zipActions.compress(commandArguments);
       break;
     case 'decompress':
-      zipActions.decompress(commandArguments);
+      await zipActions.decompress(commandArguments);
       break;
     default:
       console.log(`${COLOR.red}Invalid input${COLOR.default}`);

@@ -34,3 +34,4 @@ export const hasTwoArgument = (args) => {
 };
 
 export const FILE_NOT_FOUND = `${COLOR.red}Operation failed! The file is not found!${COLOR.default}`;
+export const FILE_IS_ALREADY_EXIST = `${COLOR.red}Operation failed! The file is already exist!${COLOR.default}`;

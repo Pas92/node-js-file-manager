@@ -25,7 +25,6 @@ export const calculateHash = async (args) => {
           COLOR.default
         } is ${COLOR.magenta}`
       );
-      // input.pipe(hash).setEncoding('hex').pipe(process.stdout);
       await pipeline(input, hash, output);
       process.stdout.write(`${COLOR.default}\n`);
     }
