@@ -53,7 +53,7 @@ const chooseAction = async (chunk) => {
       osInfo.getOsInfo(commandArguments);
       break;
     case 'hash':
-      hashCalculator.calculateHash(commandArguments);
+      await hashCalculator.calculateHash(commandArguments);
       break;
     case 'compress':
       zipActions.compress(commandArguments);
